@@ -200,6 +200,15 @@
     [self.inAppBrowserViewController navigateTo:url];
     if (!browserOptions.hidden) {
         [self show:nil];
+    } 
+    
+    // Smartwaiver Edit: we do a quick (unseen) show/hide to correctly set the size of the webview so that the smartwaiver signature pad get's sized correctly.
+    else {
+        [self.viewController presentViewController:self.inAppBrowserViewController
+                                          animated:NO
+                                        completion:^(){
+                                            [self.viewController dismissViewControllerAnimated:NO completion:nil];
+        }];
     }
 }
 
