@@ -359,7 +359,14 @@ public class InAppBrowser extends CordovaPlugin {
             Log.d(LOG_TAG, "Should never happen");
         }
     }
-
+    
+    
+    /**
+     * Closes the dialog
+     */
+    public void postBackMessage() {
+    	injectDeferredObject("window.__iabNativeBridge.__trigger_message({action: 'androidBackButton'})", null);
+    }
     /**
      * Checks to see if it is possible to go back one page in history, then does so.
      */
@@ -459,8 +466,10 @@ public class InAppBrowser extends CordovaPlugin {
 
             public void run() {
                 // Let's create the main dialog
-                dialog = new InAppBrowserDialog(cordova.getActivity(), android.R.style.Theme_NoTitleBar);
+            	Log.d("InAppBrowser", "opening main...");
+                dialog = new InAppBrowserDialog(cordova.getActivity(), android.R.style.Theme_NoTitleBar_Fullscreen);
                 dialog.getWindow().getAttributes().windowAnimations = android.R.style.Animation_Dialog;
+                dialog.getWindow().setFlags(LayoutParams.FLAG_FULLSCREEN, LayoutParams.FLAG_FULLSCREEN);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setCancelable(true);
                 dialog.setInAppBroswer(getInAppBrowser());
@@ -592,7 +601,7 @@ public class InAppBrowser extends CordovaPlugin {
                 WebSettings settings = inAppWebView.getSettings();
                 settings.setJavaScriptEnabled(true);
                 settings.setJavaScriptCanOpenWindowsAutomatically(true);
-                settings.setBuiltInZoomControls(true);
+                settings.setBuiltInZoomControls(false);
                 settings.setPluginState(android.webkit.WebSettings.PluginState.ON);
 
                 //Toggle whether this is enabled or not!
