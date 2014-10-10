@@ -19,7 +19,7 @@
 
 # org.apache.cordova.inappbrowser
 
-Questo plugin fornisce una vista di browser web che viene visualizzata quando si chiama `window.open()` , o quando un link di apertura formata come`<a target="_blank">`.
+Questo plugin fornisce una vista di browser web che viene visualizzata quando si chiama`window.open()`.
 
     var ref = window.open('http://apache.org', '_blank', 'location=yes');
     
@@ -31,22 +31,11 @@ Questo plugin fornisce una vista di browser web che viene visualizzata quando si
     cordova plugin add org.apache.cordova.inappbrowser
     
 
-### Firefox OS
-
-Creare **www/manifest.webapp** come descritto nel [Manifesto Docs][1]. Aggiungi permisions rilevanti.
-
- [1]: https://developer.mozilla.org/en-US/Apps/Developing/Manifest
-
-    "permissions": {
-        "browser": {}
-    }
-    
-
 ## window.open
 
 Apre un URL in una nuova `InAppBrowser` istanza, l'istanza corrente del browser o il browser di sistema.
 
-    rif var = Window. Open (url, destinazione, opzioni);
+    var ref = window.open(url, target, options);
     
 
 *   **Rif**: fare riferimento alla `InAppBrowser` finestra. *(InAppBrowser)*
@@ -85,25 +74,61 @@ Apre un URL in una nuova `InAppBrowser` istanza, l'istanza corrente del browser 
     *   **allowInlineMediaPlayback**: impostare su `yes` o `no` per consentire la riproduzione dei supporti HTML5 in linea, visualizzare all'interno della finestra del browser, piuttosto che un'interfaccia specifica del dispositivo di riproduzione. L'HTML `video` elemento deve includere anche il `webkit-playsinline` (default di attributo`no`)
     *   **keyboardDisplayRequiresUserAction**: impostare su `yes` o `no` per aprire la tastiera quando elementi form ricevano lo stato attivo tramite di JavaScript `focus()` chiamata (default`yes`).
     *   **suppressesIncrementalRendering**: impostare su `yes` o `no` aspettare fino a quando tutti i nuovi contenuti di vista viene ricevuto prima il rendering (default`no`).
-    *   **presentationstyle**: impostare su `pagesheet` , `formsheet` o `fullscreen` per impostare lo [stile di presentazione][2] (default`fullscreen`).
-    *   **transitionstyle**: impostare su `fliphorizontal` , `crossdissolve` o `coververtical` per impostare lo [stile di transizione][3] (default`coververtical`).
+    *   **presentationstyle**: impostare su `pagesheet` , `formsheet` o `fullscreen` per impostare lo [stile di presentazione][1] (default`fullscreen`).
+    *   **transitionstyle**: impostare su `fliphorizontal` , `crossdissolve` o `coververtical` per impostare lo [stile di transizione][2] (default`coververtical`).
     *   **toolbarposition**: impostare su `top` o `bottom` (default è `bottom` ). Provoca la barra degli strumenti sia nella parte superiore o inferiore della finestra.
+    
+    Solo per Windows:
+    
+    *   **nascosti**: impostare su `yes` per creare il browser e caricare la pagina, ma non mostrarlo. L'evento loadstop viene generato quando il caricamento è completato. Omettere o impostata su `no` (impostazione predefinita) per avere il browser aperto e caricare normalmente.
 
- [2]: http://developer.apple.com/library/ios/documentation/UIKit/Reference/UIViewController_Class/Reference/Reference.html#//apple_ref/occ/instp/UIViewController/modalPresentationStyle
- [3]: http://developer.apple.com/library/ios/#documentation/UIKit/Reference/UIViewController_Class/Reference/Reference.html#//apple_ref/occ/instp/UIViewController/modalTransitionStyle
+ [1]: http://developer.apple.com/library/ios/documentation/UIKit/Reference/UIViewController_Class/Reference/Reference.html#//apple_ref/occ/instp/UIViewController/modalPresentationStyle
+ [2]: http://developer.apple.com/library/ios/#documentation/UIKit/Reference/UIViewController_Class/Reference/Reference.html#//apple_ref/occ/instp/UIViewController/modalTransitionStyle
 
 ### Piattaforme supportate
 
 *   Amazon fuoco OS
 *   Android
 *   BlackBerry 10
+*   Firefox OS
 *   iOS
+*   Windows 8 e 8.1
 *   Windows Phone 7 e 8
 
 ### Esempio
 
     var ref = window.open('http://apache.org', '_blank', 'location=yes');
     var ref2 = window.open(encodeURI('http://ja.m.wikipedia.org/wiki/ハングル'), '_blank', 'location=yes');
+    
+
+### Firefox OS stranezze
+
+Come plugin non imporre alcun disegno c'è bisogno di aggiungere alcune regole CSS se aperto con `target='_blank'` . Le regole potrebbero apparire come questi
+
+     css
+    .inAppBrowserWrap {
+      background-color: rgba(0,0,0,0.75);
+      color: rgba(235,235,235,1.0);
+    }
+    .inAppBrowserWrap menu {
+      overflow: auto;
+      list-style-type: none;
+      padding-left: 0;
+    }
+    .inAppBrowserWrap menu li {
+      font-size: 25px;
+      height: 25px;
+      float: left;
+      margin: 0 10px;
+      padding: 3px 10px;
+      text-decoration: none;
+      color: #ccc;
+      display: block;
+      background: rgba(30,30,30,0.50);
+    }
+    .inAppBrowserWrap menu li.disabled {
+        color: #777;
+    }
     
 
 ## InAppBrowser
@@ -152,6 +177,7 @@ L'oggetto restituito da una chiamata a`window.open`.
 *   Amazon fuoco OS
 *   Android
 *   iOS
+*   Windows 8 e 8.1
 *   Windows Phone 7 e 8
 
 ### Esempio rapido
@@ -183,6 +209,7 @@ L'oggetto restituito da una chiamata a`window.open`.
 *   Amazon fuoco OS
 *   Android
 *   iOS
+*   Windows 8 e 8.1
 *   Windows Phone 7 e 8
 
 ### Esempio rapido
@@ -206,7 +233,9 @@ L'oggetto restituito da una chiamata a`window.open`.
 
 *   Amazon fuoco OS
 *   Android
+*   Firefox OS
 *   iOS
+*   Windows 8 e 8.1
 *   Windows Phone 7 e 8
 
 ### Esempio rapido
@@ -229,6 +258,7 @@ L'oggetto restituito da una chiamata a`window.open`.
 *   Amazon fuoco OS
 *   Android
 *   iOS
+*   Windows 8 e 8.1
 
 ### Esempio rapido
 
@@ -260,6 +290,7 @@ L'oggetto restituito da una chiamata a`window.open`.
 *   Amazon fuoco OS
 *   Android
 *   iOS
+*   Windows 8 e 8.1
 
 ### Esempio rapido
 
