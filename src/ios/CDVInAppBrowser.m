@@ -467,25 +467,49 @@
 
 - (void)injectDeferredObject:(NSString*)source withWrapper:(NSString*)jsWrapper
 {
+    // this gets called only after we actually have an iframe bridge.
+    void (^afterBridgeReady)(id, NSError *) = ^void(id result, NSError* err) {
+        
+        if (err) {
+            NSLog(@"Error injecting _cdvIframeBridge: %@", [err localizedDescription]);
+            
+            // is it absurd to just try again?
+//            NSLog(@"Trying again");
+//            [self injectDeferredObject:source withWrapper:jsWrapper];
+            
+        } else {
+            if (!_injectedIframeBridge) {
+                NSLog(@"successfully injected _cdvIframeBridge");
+            }
+            _injectedIframeBridge = YES;
+            
+            // this is when we inject the code we are actually trying to inject
+            if (jsWrapper != nil) {
+                NSString* sourceArrayString = [@[source] JSONString];
+                if (sourceArrayString) {
+                    NSString* sourceString = [sourceArrayString substringWithRange:NSMakeRange(1, [sourceArrayString length] - 2)];
+                    NSString* jsToInject = [NSString stringWithFormat:jsWrapper, sourceString];
+                    //            [self.inAppBrowserViewController.webView stringByEvaluatingJavaScriptFromString:jsToInject];
+                    [self.inAppBrowserViewController.webView evaluateJavaScript:jsToInject completionHandler:nil];
+                }
+            } else {
+                //        [self.inAppBrowserViewController.webView stringByEvaluatingJavaScriptFromString:source];
+                [self.inAppBrowserViewController.webView evaluateJavaScript:source completionHandler:nil];
+            }
+        }
+    };
+    
     if (!_injectedIframeBridge) {
-        _injectedIframeBridge = YES;
         // Create an iframe bridge in the new document to communicate with the CDVInAppBrowserViewController
+        
         //        [self.inAppBrowserViewController.webView stringByEvaluatingJavaScriptFromString:@"(function(d){var e = _cdvIframeBridge = d.createElement('iframe');e.style.display='none';d.body.appendChild(e);})(document)"];
-        [self.inAppBrowserViewController.webView evaluateJavaScript:@"(function(d){var e = _cdvIframeBridge = d.createElement('iframe');e.style.display='none';d.body.appendChild(e);})(document)" completionHandler:nil];
+        NSLog(@"obc: injecting bridge");
+        [self.inAppBrowserViewController.webView evaluateJavaScript:@"(function(d){if (!window._cdvIframeBridge) {var e = _cdvIframeBridge = d.createElement('iframe');e.style.display='none';d.body.appendChild(e);}})(document)" completionHandler:afterBridgeReady];
+    
+    } else {
+        afterBridgeReady(nil, nil);
     }
     
-    if (jsWrapper != nil) {
-        NSString* sourceArrayString = [@[source] JSONString];
-        if (sourceArrayString) {
-            NSString* sourceString = [sourceArrayString substringWithRange:NSMakeRange(1, [sourceArrayString length] - 2)];
-            NSString* jsToInject = [NSString stringWithFormat:jsWrapper, sourceString];
-            //            [self.inAppBrowserViewController.webView stringByEvaluatingJavaScriptFromString:jsToInject];
-            [self.inAppBrowserViewController.webView evaluateJavaScript:jsToInject completionHandler:nil];
-        }
-    } else {
-        //        [self.inAppBrowserViewController.webView stringByEvaluatingJavaScriptFromString:source];
-        [self.inAppBrowserViewController.webView evaluateJavaScript:source completionHandler:nil];
-    }
 }
 
 - (void)injectScriptCode:(CDVInvokedUrlCommand*)command
